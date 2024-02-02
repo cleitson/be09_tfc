@@ -4,7 +4,10 @@ import loginMiddleware from '../middlewares/loginMiddleware';
 
 const userController = new UserController();
 const router = Router();
-router.use(loginMiddleware);
-router.post('/', async (req: Request, res: Response) => userController.getUserByEmail(req, res));
+router.post(
+  '/',
+  loginMiddleware,
+  async (req: Request, res: Response) => userController.getUserByEmail(req, res),
+);
 
 export default router;
