@@ -9,10 +9,20 @@ export default class UserController {
 
   public async getUserByEmail(req: Request, res: Response): Promise<Response> {
     const { email, password } = req.body;
-    const user = await this.userService.getUserByEmail(email, password);
-    if (user.status !== 'SUCCESSFUL') {
-      return res.status(mapStatusHTTP(user.status)).json(user.data);
+    const { status, data } = await this.userService.getUserByEmail(email, password);
+    if (status !== 'SUCCESSFUL') {
+      return res.status(mapStatusHTTP(status)).json(data);
     }
-    return res.status(200).json(user.data);
+    return res.status(200).json(data);
+  }
+
+  public async getUserRole(req: Request, res: Response): Promise<Response> {
+    const { authorization } = req.headers as { authorization: string };
+    const [, token] = authorization.split(' ');
+    const { status, data } = await this.userService.getUserRole(token);
+    if (status !== 'SUCCESSFUL') {
+      return res.status(mapStatusHTTP(status)).json(data);
+    }
+    return res.status(mapStatusHTTP(status)).json(data);
   }
 }

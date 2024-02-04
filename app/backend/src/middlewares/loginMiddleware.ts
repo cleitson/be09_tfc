@@ -19,4 +19,10 @@ const loginMiddleware = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-export default loginMiddleware;
+const validateToken = (req: Request, res: Response, next: NextFunction) => {
+  const token = req.headers.authorization;
+  if (!token) return res.status(401).json({ message: 'Token not found' });
+  next();
+};
+
+export { loginMiddleware, validateToken };

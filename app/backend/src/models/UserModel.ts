@@ -10,4 +10,10 @@ export default class UserModel implements IUserModel {
     if (!dbData) return null;
     return dbData;
   }
+
+  async findById(id: number): Promise<IUser | null> {
+    const dbData = await this.model.findByPk(id);
+    if (!dbData) return null;
+    return dbData;
+  }
 }
