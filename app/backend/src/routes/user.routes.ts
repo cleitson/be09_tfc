@@ -1,18 +1,18 @@
 import { Request, Response, Router } from 'express';
 import UserController from '../controllers/UserController';
-import { loginMiddleware, validateToken } from '../middlewares/loginMiddleware';
+import { loginAuth, tokenAuth } from '../middlewares/loginMiddleware';
 
 const userController = new UserController();
 const router = Router();
 router.post(
   '/',
-  loginMiddleware,
+  loginAuth,
   async (req: Request, res: Response) => userController.getUserByEmail(req, res),
 );
 router.get(
   '/role',
-  validateToken,
-  async (req: Request, res: Response) => userController.getUserRole(req, res),
+  tokenAuth,
+  (_req: Request, res: Response) => res.status(200).json({ role: res.locals.payload.role }),
 );
 
 export default router;

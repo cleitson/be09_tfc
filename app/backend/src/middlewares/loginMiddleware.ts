@@ -1,12 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import joi = require('joi');
+import * as jwt from 'jsonwebtoken';
+
+const jtwPassword = process.env.SECRET || 'secret';
 
 const loginSchema = joi.object({
   email: joi.string().email().required(),
   password: joi.string().min(6).required(),
 });
 
-const loginMiddleware = (req: Request, res: Response, next: NextFunction) => {
+const loginAuth = (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).json({ message: 'All fields must be filled' });
@@ -19,10 +22,19 @@ const loginMiddleware = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-const validateToken = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization;
-  if (!token) return res.status(401).json({ message: 'Token not found' });
+const tokenAuth = (req: Request, res: Response, next: NextFunction) => {
+  const { authorization } = req.headers;
+  if (!authorization) return res.status(401).json({ message: 'Token not found' });
+
+  const [, token] = authorization.split(' ');
+  try {
+    const payload = jwt.verify(token, jtwPassword);
+    res.locals.payload = payload;
+  } catch (error) {
+    return res.status(401).json({ message: 'Token must be a valid token' });
+  }
+
   next();
 };
 
-export { loginMiddleware, validateToken };
+export { loginAuth, tokenAuth };
