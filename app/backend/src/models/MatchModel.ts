@@ -22,4 +22,22 @@ export default class MatchModel implements IMatchesModel {
       ] });
     return dbData;
   }
+
+  async matchInProgress(progress: boolean): Promise<IMatch[]> {
+    const dbData = await this.model.findAll({ where: { inProgress: progress },
+      nest: true,
+      include: [
+        {
+          model: SequelizeTeam,
+          as: 'homeTeam',
+          attributes: ['teamName'],
+        },
+        {
+          model: SequelizeTeam,
+          as: 'awayTeam',
+          attributes: ['teamName'],
+        },
+      ] });
+    return dbData;
+  }
 }
