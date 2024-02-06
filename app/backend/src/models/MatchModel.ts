@@ -40,4 +40,27 @@ export default class MatchModel implements IMatchesModel {
       ] });
     return dbData;
   }
+
+  async findMatch(matchId: number): Promise<IMatch | null> {
+    const dbData = await this.model.findOne({ where: { id: matchId },
+      nest: true,
+      include: [
+        {
+          model: SequelizeTeam,
+          as: 'homeTeam',
+          attributes: ['teamName'],
+        },
+        {
+          model: SequelizeTeam,
+          as: 'awayTeam',
+          attributes: ['teamName'],
+        },
+      ] });
+    if (!dbData) return null;
+    return dbData;
+  }
+
+  async finishMatch(matchId: number): Promise<void> {
+    await this.model.update({ inProgress: false }, { where: { id: matchId } });
+  }
 }
