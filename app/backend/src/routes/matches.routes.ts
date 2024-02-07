@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import MatchController from '../controllers/MatchController';
 import { tokenAuth } from '../middlewares/loginMiddleware';
-import matchValidation from '../middlewares/matchMiddleware';
+import { matchValidation, newMatchValidation } from '../middlewares/matchMiddleware';
 
 const teamController = new MatchController();
 
@@ -18,5 +18,11 @@ router.patch(
   tokenAuth,
   matchValidation,
   (req: Request, res: Response) => teamController.updateMatchResult(req, res),
+);
+router.post(
+  '/',
+  tokenAuth,
+  newMatchValidation,
+  (req: Request, res: Response) => teamController.createMatch(req, res),
 );
 export default router;
