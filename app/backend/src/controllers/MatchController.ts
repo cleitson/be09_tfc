@@ -23,4 +23,15 @@ export default class MatchController {
     const { status, data } = await this.matchService.finishMatch(Number(id));
     return res.status(mapStatusHTTP(status)).json(data);
   }
+
+  public async updateMatchResult(req: Request, res: Response): Promise<Response> {
+    const { id } = req.params;
+    const { homeTeamGoals, awayTeamGoals } = req.body;
+    const { status, data } = await this.matchService.updateMatchResult(
+      Number(id),
+      homeTeamGoals,
+      awayTeamGoals,
+    );
+    return res.status(mapStatusHTTP(status)).json(data);
+  }
 }

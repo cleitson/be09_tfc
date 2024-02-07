@@ -23,4 +23,15 @@ export default class MatchService {
     await this.matchModel.finishMatch(match.id);
     return { status: 'SUCCESSFUL', data: { message: 'Finished' } };
   }
+
+  public async updateMatchResult(
+    id: number,
+    homeGoals: number,
+    awayGoals: number,
+  ): Promise<ServiceResponse<{ message: string }>> {
+    const match = await this.matchModel.findMatch(id);
+    if (!match) return { status: 'NOT_FOUND', data: { message: 'Match not found' } };
+    await this.matchModel.updateMatchResult(match.id, homeGoals, awayGoals);
+    return { status: 'SUCCESSFUL', data: { message: 'Updated' } };
+  }
 }
