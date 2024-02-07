@@ -42,9 +42,10 @@ export default class MatchService {
     awayTeamGoals: number,
   ): Promise<ServiceResponse<IMatch>> {
     const homeTeam = await this.matchModel.findTeam(homeTeamId);
-    if (!homeTeam) return { status: 'NOT_FOUND', data: { message: 'Home team not found' } };
     const awayTeam = await this.matchModel.findTeam(awayTeamId);
-    if (!awayTeam) return { status: 'NOT_FOUND', data: { message: 'Away team not found' } };
+    if (!homeTeam || !awayTeam) {
+      return { status: 'NOT_FOUND', data: { message: 'There is no team with such id!' } };
+    }
     const match = await this.matchModel.createMatch(
       homeTeam.id,
       awayTeam.id,
