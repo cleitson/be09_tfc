@@ -13,34 +13,39 @@ export default class LeaderBoardService {
   ) { }
 
   async matchesFinished() {
-    const allMatches = await this.matchModel.getMatches();
-    const finishMatch = allMatches.filter((match: IMatch) => match.inProgress === false);
-    return finishMatch;
+    const allMatches = await this.matchModel.matchInProgress(false);
+    return allMatches;
   }
 
-  async filterResultByTeam(allMatches: IMatch[], id: number) {
-    const filterTeam = allMatches.filter((match) => match.homeTeamId === id);
-    const filtered = Promise.all(filterTeam.map(async (match) => ({
-      partida: match.id,
-      time: (await this.teamModel.findById(match.homeTeamId))?.teamName as string,
-      golsFeitos: match.homeTeamGoals,
-      golsRecebidos: match.awayTeamGoals,
-      resultado: resultadoFinal(match.homeTeamGoals, match.awayTeamGoals),
-    })));
-    return filtered;
+  async filterResultByTeam(allMatches: IMatch[]) {
+    const allTeams = await this.teamModel.findAll();
+    const data:IMatch[][] = [];
+    await Promise.all(allTeams.map(async (team) => {
+      const filterTeam = allMatches.filter((match) => match.homeTeamId === team.id);
+      data.push(filterTeam);
+    }));
+
+    const result = await Promise.all(
+      data.map(async (team) => Promise.all(team.map(async (match) => ({
+        partida: match.id,
+        time: (await this.teamModel.findById(match.homeTeamId))?.teamName as string,
+        golsFeitos: match.homeTeamGoals,
+        golsRecebidos: match.awayTeamGoals,
+        resultado: resultadoFinal(match.homeTeamGoals, match.awayTeamGoals),
+      })))),
+    );
+    return result;
   }
 
   public async homeBoard(): Promise<ServiceResponse<PartidasFiltradas[]>> {
-    const data: PartidasFiltradas[] = [];
     const finished = await this.matchesFinished();
-    const promises = finished.map(async (match) => {
-      const filtro = await this.filterResultByTeam(finished, match.homeTeamId);
-      const result = partidasFiltradas(filtro);
-      data.push(result);
-    });
-    await Promise.all(promises);
-    // const resultadoOrdenado = result.sort((a, b) => b.totalPoints - a.totalPoints);
+    const filtro = await this.filterResultByTeam(finished);
+    const result = filtro.map((team) => partidasFiltradas(team));
+    const resultadoOrdenado = result
+      .sort((a, b) => b.goalsFavor - a.goalsFavor)
+      .sort((a, b) => b.goalsBalance - a.goalsBalance)
+      .sort((a, b) => b.totalPoints - a.totalPoints);
 
-    return { status: 'SUCCESSFUL', data };
+    return { status: 'SUCCESSFUL', data: resultadoOrdenado };
   }
 }
