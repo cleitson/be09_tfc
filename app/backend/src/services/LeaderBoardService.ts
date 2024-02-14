@@ -30,7 +30,7 @@ export default class LeaderBoardService {
     return filtered;
   }
 
-  public async homeBoard(): Promise<ServiceResponse<any>> {
+  public async homeBoard(): Promise<ServiceResponse<PartidasFiltradas[]>> {
     const data: PartidasFiltradas[] = [];
     const finished = await this.matchesFinished();
     const promises = finished.map(async (match) => {
