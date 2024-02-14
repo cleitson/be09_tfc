@@ -8,7 +8,12 @@ export default class LeaderBoardController {
   ) { }
 
   public async homeBoard(req: Request, res: Response): Promise<Response> {
-    const { status, data } = await this.leaderBoardService.homeBoard();
+    const { status, data } = await this.leaderBoardService.awayHomeBoard('home');
+    return res.status(mapStatusHTTP(status)).json(data);
+  }
+
+  public async awayBoard(req: Request, res: Response): Promise<Response> {
+    const { status, data } = await this.leaderBoardService.awayHomeBoard('away');
     return res.status(mapStatusHTTP(status)).json(data);
   }
 }
