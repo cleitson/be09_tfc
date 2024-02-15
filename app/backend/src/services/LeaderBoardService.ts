@@ -4,7 +4,7 @@ import TeamModel from '../models/TeamModel';
 import { IMatch } from '../Interfaces/matches/IMatch';
 // import { ITeam } from '../Interfaces/teams/ITeam';
 import { ServiceResponse } from '../Interfaces/ServiceResponse';
-import { resultadoFinal, partidasFiltradas } from '../utils/resultados';
+import { resultadoFinal, partidasFiltradas, leaderBoard } from '../utils/resultados';
 
 type AwayHome = 'home' | 'away';
 
@@ -49,6 +49,22 @@ export default class LeaderBoardService {
       .sort((a, b) => b.goalsBalance - a.goalsBalance)
       .sort((a, b) => b.totalPoints - a.totalPoints);
 
+    return { status: 'SUCCESSFUL', data: resultadoOrdenado };
+  }
+
+  public async leaderBoardFull(): Promise<ServiceResponse<PartidasFiltradas[]>> {
+    const finished = await this.matchesFinished();
+    const home = await this.filterResultByTeam(finished, 'home');
+    const away = await this.filterResultByTeam(finished, 'away');
+
+    const resultHome = home.map((team) => partidasFiltradas(team));
+    const resultAway = away.map((team) => partidasFiltradas(team));
+    const final = [...resultHome, ...resultAway];
+    const fil = leaderBoard(final);
+    const resultadoOrdenado = fil
+      .sort((a, b) => b.goalsFavor - a.goalsFavor)
+      .sort((a, b) => b.goalsBalance - a.goalsBalance)
+      .sort((a, b) => b.totalPoints - a.totalPoints);
     return { status: 'SUCCESSFUL', data: resultadoOrdenado };
   }
 }

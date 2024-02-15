@@ -34,4 +34,51 @@ const partidasFiltradas = (partidas: Partidas[]): PartidasFiltradas => {
   };
 };
 
-export { resultadoFinal, aproveitamento, partidasFiltradas };
+// const leaderBoard = (tabela: PartidasFiltradas[]): PartidasFiltradas[] => {
+//   const resultados: PartidasFiltradas[] = Object.values(
+//     tabela.reduce((acc: Record<string, PartidasFiltradas>, objeto) => {
+//       const nome = objeto.name;
+//       if (!acc[nome]) {
+//         acc[nome] = { ...objeto };
+//       } else {
+//         acc[nome].totalPoints += objeto.totalPoints;
+//         acc[nome].totalGames += objeto.totalGames;
+//         acc[nome].totalVictories += objeto.totalVictories;
+//         acc[nome].totalDraws += objeto.totalDraws;
+//         acc[nome].totalLosses += objeto.totalLosses;
+//         acc[nome].goalsFavor += objeto.goalsFavor;
+//         acc[nome].goalsOwn += objeto.goalsOwn;
+//         acc[nome].goalsBalance += objeto.goalsBalance;
+//         acc[nome].efficiency = ((parseFloat(acc[nome].efficiency) + parseFloat(objeto.efficiency)) / 2).toFixed(2);
+//       }
+//       return acc;
+//     }, {} as Record<string, PartidasFiltradas>),
+//   );
+//   return resultados;
+// };
+const calcularResultado = (acc: Record<string, PartidasFiltradas>, board: PartidasFiltradas) => {
+  const nome = board.name;
+  if (!acc[nome]) {
+    acc[nome] = { ...board };
+  } else {
+    acc[nome].totalPoints += board.totalPoints;
+    acc[nome].totalGames += board.totalGames;
+    acc[nome].totalVictories += board.totalVictories;
+    acc[nome].totalDraws += board.totalDraws;
+    acc[nome].totalLosses += board.totalLosses;
+    acc[nome].goalsFavor += board.goalsFavor;
+    acc[nome].goalsOwn += board.goalsOwn;
+    acc[nome].goalsBalance += board.goalsBalance;
+    acc[nome].efficiency = aproveitamento(acc[nome].totalPoints, acc[nome].totalGames);
+  }
+  return acc;
+};
+
+const leaderBoard = (tabela: PartidasFiltradas[]): PartidasFiltradas[] => {
+  const resultados: PartidasFiltradas[] = Object.values(
+    tabela.reduce(calcularResultado, {} as Record<string, PartidasFiltradas>),
+  );
+  return resultados;
+};
+
+export { resultadoFinal, aproveitamento, partidasFiltradas, leaderBoard };
