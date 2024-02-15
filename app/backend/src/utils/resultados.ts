@@ -34,28 +34,6 @@ const partidasFiltradas = (partidas: Partidas[]): PartidasFiltradas => {
   };
 };
 
-// const leaderBoard = (tabela: PartidasFiltradas[]): PartidasFiltradas[] => {
-//   const resultados: PartidasFiltradas[] = Object.values(
-//     tabela.reduce((acc: Record<string, PartidasFiltradas>, objeto) => {
-//       const nome = objeto.name;
-//       if (!acc[nome]) {
-//         acc[nome] = { ...objeto };
-//       } else {
-//         acc[nome].totalPoints += objeto.totalPoints;
-//         acc[nome].totalGames += objeto.totalGames;
-//         acc[nome].totalVictories += objeto.totalVictories;
-//         acc[nome].totalDraws += objeto.totalDraws;
-//         acc[nome].totalLosses += objeto.totalLosses;
-//         acc[nome].goalsFavor += objeto.goalsFavor;
-//         acc[nome].goalsOwn += objeto.goalsOwn;
-//         acc[nome].goalsBalance += objeto.goalsBalance;
-//         acc[nome].efficiency = ((parseFloat(acc[nome].efficiency) + parseFloat(objeto.efficiency)) / 2).toFixed(2);
-//       }
-//       return acc;
-//     }, {} as Record<string, PartidasFiltradas>),
-//   );
-//   return resultados;
-// };
 const calcularResultado = (acc: Record<string, PartidasFiltradas>, board: PartidasFiltradas) => {
   const nome = board.name;
   if (!acc[nome]) {

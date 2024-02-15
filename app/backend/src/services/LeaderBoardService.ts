@@ -2,7 +2,6 @@ import { PartidasFiltradas } from '../Interfaces/matches/ILeaderBoard';
 import MatchModel from '../models/MatchModel';
 import TeamModel from '../models/TeamModel';
 import { IMatch } from '../Interfaces/matches/IMatch';
-// import { ITeam } from '../Interfaces/teams/ITeam';
 import { ServiceResponse } from '../Interfaces/ServiceResponse';
 import { resultadoFinal, partidasFiltradas, leaderBoard } from '../utils/resultados';
 
@@ -13,11 +12,6 @@ export default class LeaderBoardService {
     private matchModel: MatchModel = new MatchModel(),
     private teamModel: TeamModel = new TeamModel(),
   ) { }
-
-  async matchesFinished() {
-    const allMatches = await this.matchModel.matchInProgress(false);
-    return allMatches;
-  }
 
   async filterResultByTeam(allMatches: IMatch[], awayHome: AwayHome) {
     const allTeams = await this.teamModel.findAll();
@@ -41,7 +35,7 @@ export default class LeaderBoardService {
   }
 
   public async awayHomeBoard(awayHome: AwayHome): Promise<ServiceResponse<PartidasFiltradas[]>> {
-    const finished = await this.matchesFinished();
+    const finished = await this.matchModel.matchInProgress(false);
     const filtro = await this.filterResultByTeam(finished, awayHome);
     const result = filtro.map((team) => partidasFiltradas(team));
     const resultadoOrdenado = result
@@ -53,7 +47,7 @@ export default class LeaderBoardService {
   }
 
   public async leaderBoardFull(): Promise<ServiceResponse<PartidasFiltradas[]>> {
-    const finished = await this.matchesFinished();
+    const finished = await this.matchModel.matchInProgress(false);
     const home = await this.filterResultByTeam(finished, 'home');
     const away = await this.filterResultByTeam(finished, 'away');
 
